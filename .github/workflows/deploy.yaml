@@ -1,0 +1,20 @@
+name: Deploy to Coolify
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Deployment
+        run: |
+          curl --request POST '${{ secrets.COOLIFY_WEBHOOK }}' \
+          --fail \
+          --header 'Authorization: Bearer ${{ secrets.COOLIFY_API_TOKEN }}' \
+          --header 'CF-Access-Client-Id: ${{ secrets.CF_CLIENT_ID }}' \
+          --header 'CF-Access-Client-Secret: ${{ secrets.CF_CLIENT_SECRET }}'
