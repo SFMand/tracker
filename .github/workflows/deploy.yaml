@@ -19,16 +19,36 @@ jobs:
       - name: Setup Go environment
         uses: actions/setup-go@v5
         with:
-          go-version: "1.25"
+          go-version: "1.23"
 
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v4
         with:
           version: v1.58
-
-  deploy:
+  build:
     runs-on: ubuntu-latest
     needs: lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+
+      - name: Build
+        run: go build -v ./...
+
+      - name: Test
+        run: go test -v ./...
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs: build
     steps:
       - name: Trigger Deployment
         run: |
